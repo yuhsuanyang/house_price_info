@@ -4,7 +4,7 @@ import requests
 import collections
 import numpy as np
 import pandas as pd
-from config import regionid, section
+from .config import regionid, section
 from io import StringIO
 from bs4 import BeautifulSoup
 
@@ -27,7 +27,7 @@ query_args example:
 
 
 def get_query_cmd(args):
-    query_cmd = f"regionid={config.regionid[args['city']]}&"
+    query_cmd = f"regionid={regionid[args['city']]}&"
     for arg in args:
         if arg == 'city':
             continue
@@ -35,7 +35,7 @@ def get_query_cmd(args):
         if arg in ['section', 'pattern']:
             for option in args[arg]:
                 if arg == 'section':
-                    query_cmd += f"{config.section[args['city']][option]},"
+                    query_cmd += f"{section[args['city']][option]},"
                 elif arg == 'pattern':
                     query_cmd += f"{option},"
             query_cmd = query_cmd[:-1] + '&'
@@ -49,11 +49,11 @@ def get_query_cmd(args):
 def download_house_data(query_cmd, page):
     s = requests.Session()
     url = 'https://sale.591.com.tw/'
-    r = s.get(url, headers=header)
+    r = s.get(url, headers=HEADER)
     soup = BeautifulSoup(r.text, 'html.parser')
     token_item = soup.select_one('meta[name="csrf-token"]')
-    header['X-CSRF-TOKEN'] = token_item['content']
-    res = s.get(f'https://sale.591.com.tw/home/search/list?type=2&shType=list&regionid=3&{query_cmd}&firstRow={page * 30}', headers=header)
+    HEADER['X-CSRF-TOKEN'] = token_item['content']
+    res = s.get(f'https://sale.591.com.tw/home/search/list?type=2&shType=list&regionid=3&{query_cmd}&firstRow={page * 30}', headers=HEADER)
     if res.status_code == 200:
         data = res.json()['data']['house_list']
         print(f'success, {len(data)} items found')
@@ -67,7 +67,7 @@ def query_house(query_cmd):
     page = 0
     results = []
     while status:
-        data = download_data(query_cmd, page)
+        data = download_house_data(query_cmd, page)
         if not data:
             status = False
         else:
@@ -80,14 +80,22 @@ def query_house(query_cmd):
                'unitprice', 'houseage', 'room', 'floor', 'area', 'mainarea', 'community_name',
                'community_link', 'tag']
     for item in results:
-        df.append([item[col] for col in columns])
+        row = []
+        for col in columns:
+            if col in item:
+                row.append(item[col])
+            else:
+                row.append(np.nan)
+        df.append(row)
     df = pd.DataFrame(df, columns=columns)
-    return df
+    null_cols = ['community_link', 'tag']
+    non_null_cols = [col for col in columns if col not in null_cols]
+    return df.dropna(subset=non_null_cols)
 
 def get_house_group(df, cluster_id_start):
     groups = []
     i = 0
-    for _, df_group in df.groupby(by=['community_name', 'floor', 'price']):
+    for _, df_group in df.groupby(by=['community_link', 'floor', 'price']):
         df_group['cluster'] = cluster_id_start + i
         groups.append(df_group)
         i += 1
@@ -98,7 +106,7 @@ def get_house_group(df, cluster_id_start):
 def download_real_price(community_link):
 #    url = f'https://market.591.com.tw/{community_id}/price'
     s = requests.Session()
-    res = s.get(f"{community_link}/price", headers=header)
+    res = s.get(f"{community_link}/price", headers=HEADER)
     soup = BeautifulSoup(res.text, 'html.parser')
     realprice_records = soup.find_all('section', class_='realprice-list-row')
     print(len(realprice_records))
@@ -119,7 +127,7 @@ def download_real_price(community_link):
 def download_imgs(house_id, save_path=None):
     url = f'https://sale.591.com.tw/home/house/detail/2/{house_id}.html'
     s = requests.Session()
-    res = s.get(url, headers=header)
+    res = s.get(url, headers=HEADER)
     soup = BeautifulSoup(res.text, 'html.parser')
     img_urls = [img_tag['data-original'] for img_tag in soup.find_all(class_='pic-box-img')]
     print(f"{len(img_urls)} imgs")
@@ -127,12 +135,12 @@ def download_imgs(house_id, save_path=None):
         res = requests.get(url)
         if save_path:
             with open(f"{save_path}/{house_id}_{i}.jpg", "wb") as file:  # 開啟資料夾及命名圖片檔
-            file.write(res.content)
+                file.write(res.content)
     return img_urls
 
 def download_iframe(house_id):
     url = f'https://sale.591.com.tw/home/house/detail/2/{house_id}.html'
     s = requests.Session()
-    res = s.get(url, headers=header)
+    res = s.get(url, headers=HEADER)
     soup = BeautifulSoup(res.text, 'html.parser')
     return soup.find('iframe', id='detail-map-free')['src']

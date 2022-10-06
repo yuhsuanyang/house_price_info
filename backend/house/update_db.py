@@ -1,5 +1,6 @@
 import pandas as pd
-from crawl import get_query_cmd, query_house, get_house_group
+from .crawl import get_query_cmd, query_house, get_house_group, download_iframe
+from tqdm import tqdm
 from .config import section
 from .models import House, Community
 
@@ -9,27 +10,96 @@ args = {
     'pattern': [1, 3],   
     'houseage': [0, 20],
 }
-def main(args):
-    cluster_id_start = len(Community.objects.all())
+def get_data(args):
     query_cmd = get_query_cmd(args)
     houses = query_house(query_cmd)
-    clusters =  get_house_group(houses, cluster_id_start)
-    houses = pd.concat(clusters)
-    for i in range(len(houses)):
+    houses['community_link'] = houses['community_link'].apply(lambda x: x.split('/')[-1])
+    houses['houseid'] = houses['houseid'].astype(str)
+    houses.drop_duplicates(subset=['houseid'], inplace=True)
+    community = houses[['community_name', 'community_link']].drop_duplicates()
+    return houses, community
+
+def add_house(houses):
+    for i in tqdm(range(len(houses))):
+        house_id = houses.iloc[i]['houseid']
+        try:
+            iframe_url = download_iframe(house_id)
+        except:
+            print('iframe download fail')
+            continue
+        tag = ','.join(houses.iloc[i]['tag'])
         row = House(
-                id=houses[i]['houseid'],
+                id=house_id,
                 cluster_id=houses.iloc[i]['cluster'],
+                title=houses.iloc[i]['title'],
                 shape_name=houses.iloc[i]['shape_name'],
                 region_name=houses.iloc[i]['region_name'],
-                section=houses.iloc[i]['section_name'],
+                section_name=houses.iloc[i]['section_name'],
                 address=houses.iloc[i]['address'],
-                location=houses.iloc[i][''],
+                location=iframe_url,
                 price=houses.iloc[i]['price'],
                 unit_price=houses.iloc[i]['unitprice'],
                 rooms=houses.iloc[i]['room'],
                 age=houses.iloc[i]['houseage'],
                 floor=houses.iloc[i]['floor'],
+                area=houses.iloc[i]['area'],
                 main_area=houses.iloc[i]['mainarea'],
                 community_id=houses.iloc[i]['community_link'],
-                tag=houses.iloc[i]['tag'])
+                tag=tag)
+        row.save()
+
+def add_community(community):
+    for i in tqdm(range(len(community))):
+        row = Community(
+                id=community.iloc[i]['community_link'],
+                name=community.iloc[i]['community_name']
+                )
+        row.save()
+
+def house2df():
+    data = House.objects.all()
+    if len(data):
+        columns = list(data[0].get_basic_info().keys())
+        df = []
+        for row in data:
+            df.append(list(row.get_basic_info().values()))
+        df = pd.DataFrame(df, columns=columns)
+    else:
+        df = pd.DataFrame({'houseid': []})
+    return df
+
+def get_exist_cluster(previous, new):
+    new_cluster = []
+    for i in range(len(new)):
+        house_id = new['houseid'].iloc[i]
+        community = new['community_link'].iloc[i]
+        if not len(community):
+            continue
+        floor = new['floor'].iloc[i]
+        price = new['price'].iloc[i] 
+        exist_cluster = previous[(previous['community_link'] == community) & (previous['floor'] == floor) & (previous['price'] == price)]
+        if len(exist_cluster):
+            new_cluster.append([house_id, exist_cluster['cluster_id'].mode().iloc[0]])
+    return pd.DataFrame(new_cluster, columns=['houseid', 'cluster']).drop_duplicates()
+
+def main(args):
+    previous_houses = house2df()
+    houses, community = get_data(args)
+    new_houses = houses[~houses['houseid'].isin(previous_houses['houseid'])]
+    if len(previous_houses):
+        new_cluster = get_exist_cluster(previous_houses, new_houses)
+        new_houses = new_houses.merge(new_cluster, how='left')
+        new_houses_without_cluster = new_houses[new_houses['cluster'].isnull()]
+        new_houses_with_cluster = new_houses[~new_houses['cluster'].isnull()]
+    else:
+        new_houses_without_cluster = new_house
+        new_houses_with_cluster = pd.DataFrame() # empty
+
+    cluster_id_start = len(House.objects.values('cluster_id').distinct())
+    new_clusters = get_house_group(new_houses_without_cluster, cluster_id_start)
+    new_houses_without_cluster = pd.concat(new_clusters)
+    houses = pd.concat([new_houses_without_cluster, new_houses_with_cluster])
+    
+    add_house(houses)
+    add_community(community)
 
