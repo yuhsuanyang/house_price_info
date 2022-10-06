@@ -44,14 +44,16 @@ class House(models.Model):
 class Community(models.Model):
     id = models.CharField(max_length=10, primary_key=True, help_text="591社區id")
     name = models.CharField(max_length=30,
-                                      null=True,
-                                      help_text="社區名稱")
+                            null=True,
+                            help_text="社區名稱")
 
     def __str__(self):
         return self.id
 
+
 class Preference(models.Model):
     cluster_id = models.IntegerField(primary_key=True, help_text="建物群集")
     preference_point = models.IntegerField(default=0, help_text="喜好程度")
+
     def __str__(self):
         return self.cluster_id
