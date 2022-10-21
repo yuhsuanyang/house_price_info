@@ -1,0 +1,119 @@
+<template>
+  <div>
+    <img src="../assets/logo_bird.png" style="width: 40%" />
+    <form id="form">
+      <div class="row">
+        <div class="cell" style="width: 100%">
+          <FormHeader txt="位置" />
+          <DropDown txt="選擇縣市" list_name="city" :values="cities" />
+          <DropDown txt="選擇行政區" list_name="district" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="cell" style="width: 50%">
+          <FormHeader txt="格局" />
+          <DropDown
+            txt="選擇房數"
+            list_name="pattern"
+            :values="rooms"
+            size="10"
+          />
+          <FormText txt="房" />
+        </div>
+        <div class="cell" style="width: 50%">
+          <FormHeader txt="面積" />
+          <Input size="5" />
+          <FormText txt="~" />
+          <Input size="5" />
+          <FormText txt="坪" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="cell" style="width: 50%">
+          <FormHeader txt="屋齡" />
+          <Input size="5" />
+          <FormText txt="~" />
+          <Input size="5" />
+          <FormText txt="年" />
+        </div>
+        <div class="cell" style="width: 50%">
+          <FormHeader txt="售金" />
+          <Input size="5" />
+          <FormText txt="~" />
+          <Input size="5" />
+          <FormText txt="萬" />
+        </div>
+      </div>
+    </form>
+    <div class="tools">
+      <div>
+        <button form="form" type="submit">
+          <img src="../assets/search.png" />
+          <p>搜尋中古屋</p>
+        </button>
+      </div>
+      <div>
+        <button onclick='window.location.href = "url here"'>
+          <img src="../assets/like.png" />
+          <p>查看喜歡</p>
+        </button>
+      </div>
+      <div>
+        <button>
+          <img src="../assets/update.png" />
+          <p>更新</p>
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import FormHeader from "./FormHeader.vue";
+import FormText from "./FormText.vue";
+import DropDown from "./DropDown.vue";
+import Input from "./Input.vue";
+export default {
+  name: "Index",
+  components: {
+    FormHeader,
+    FormText,
+    DropDown,
+    Input,
+  },
+  data() {
+    return {
+      cities: ["台北市", "新北市"],
+      rooms: [1, 2, 3, 4],
+    };
+  },
+};
+</script>
+<style>
+#form {
+  width: 50%;
+  margin: auto;
+  font-size: 1em;
+}
+.row {
+  display: flex;
+  margin: 5% 10%;
+  justify-content: space-between;
+}
+.cell {
+  display: flex;
+  gap: 1em;
+  justify-content: flex-start;
+}
+.tools {
+  display: flex;
+  gap: 1em;
+  justify-content: center;
+}
+button {
+  border: none;
+  background-color: white;
+}
+button > p {
+  margin: 0;
+}
+</style>
