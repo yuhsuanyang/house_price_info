@@ -82,9 +82,25 @@ export default {
   },
   data() {
     return {
-      cities: ["台北市", "新北市"],
+      cities: [],
       rooms: [1, 2, 3, 4],
     };
+  },
+  methods: {
+    async getData() {
+      try {
+        const response = await this.$http.get(
+          "http://127.0.0.1:8000/api1/sections"
+        );
+        //console.log(response.data);
+        this.cities = Object.keys(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  },
+  created() {
+    this.getData();
   },
 };
 </script>
