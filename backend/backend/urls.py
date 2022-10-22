@@ -15,8 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from house.views import get_section
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('house.urls'))
+    path('api/', include('house.urls')),
+    path('api1/sections', get_section)
 ]

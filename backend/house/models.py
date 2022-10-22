@@ -41,11 +41,14 @@ class House(models.Model):
         }
 
 
+class HouseImg(models.Model):
+    house_id = models.CharField(max_length=10, help_text="591房屋id")
+    img_url = models.CharField(max_length=1000, help_text="圖片連結")
+
+
 class Community(models.Model):
     id = models.CharField(max_length=10, primary_key=True, help_text="591社區id")
-    name = models.CharField(max_length=30,
-                            null=True,
-                            help_text="社區名稱")
+    name = models.CharField(max_length=30, null=True, help_text="社區名稱")
 
     def __str__(self):
         return self.id
