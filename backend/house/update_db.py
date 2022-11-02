@@ -1,8 +1,9 @@
 import pandas as pd
-from .crawl import get_query_cmd, query_house, get_house_group, download_iframe
+import multiprocessing as mp
 from tqdm import tqdm
+from .crawl import get_query_cmd, query_house, get_house_group, download_iframe, download_imgs
 from .config import section
-from .models import House, Community
+from .models import House, Community, HouseImg
 
 args = {
     'city': '台北市',
@@ -10,6 +11,8 @@ args = {
     'pattern': [1, 3],
     'houseage': [0, 20],
 }
+
+mp.set_start_method('fork')
 
 
 def get_data(args):
@@ -57,6 +60,21 @@ def add_community(community):
         row = Community(id=community.iloc[i]['community_link'],
                         name=community.iloc[i]['community_name'])
         row.save()
+
+
+def add_img(houseid, img_list):
+    for url in img_list:
+        row = HouseImg(house_id=houseid, img_url=url)
+        row.save()
+
+
+def get_gallery(houseid):
+    imgs = download_imgs(houseid)
+    if not len(imgs):
+        return [houseid]
+    else:
+        add_img(houseid, imgs)
+        return []
 
 
 def house2df():
@@ -109,6 +127,16 @@ def main(args):
                                    cluster_id_start)
     new_houses_without_cluster = pd.concat(new_clusters)
     houses = pd.concat([new_houses_without_cluster, new_houses_with_cluster])
-
-    add_house(houses)
+    work_load = houses['houseid'].values.tolist()
+    with mp.Pool(20) as p:
+        no_img = list(
+            tqdm(p.imap(get_gallery, work_load), total=len(work_load)))
+    no_img = sum(no_img, [])
+    print(no_img, 'no imgs')
+    houses = houses[~houses['houseid'].isin(no_img)]
+    add_house(houses)  # need speed up
     add_community(community)
+
+
+## TODO ##
+# merge get_gallery and download_iframe into one function

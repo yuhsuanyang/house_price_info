@@ -10,17 +10,6 @@ HEADER = {
     'user-agent':
     'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36',
 }
-'''
-query_args example:
-{
-    'city': '台北市',
-    'section': ['內湖區'],
-    'area': [20, 30], # 物件面積
-    'pattern': [2], # 格局(n房), n=1~6
-    'houseage': [0, 20],
-    'price': [1000, 2000]
-}
-'''
 
 
 def get_query_cmd(args):
@@ -142,7 +131,7 @@ def download_imgs(house_id, save_path=None):
         img_tag['data-original']
         for img_tag in soup.find_all(class_='pic-box-img')
     ]
-    print(f"{len(img_urls)} imgs")
+    #    print(f"{len(img_urls)} imgs")
     for i, url in enumerate(img_urls):
         res = requests.get(url)
         if save_path:
