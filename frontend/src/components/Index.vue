@@ -5,8 +5,18 @@
       <div class="row">
         <div class="cell" style="width: 100%">
           <FormHeader txt="位置" />
-          <DropDown txt="選擇縣市" list_name="city" :values="cities" />
-          <DropDown txt="選擇行政區" list_name="district" />
+          <DropDown
+            txt="選擇縣市"
+            list_name="city"
+            :values="cities"
+            v-model="selectedCity"
+          />
+          <DropDown
+            txt="選擇行政區"
+            list_name="district"
+            :values="districts"
+            v-model="selectedDistrict"
+          />
         </div>
       </div>
       <div class="row">
@@ -83,6 +93,10 @@ export default {
   data() {
     return {
       cities: [],
+      selectedCity: "",
+      sections: {},
+      districts: [],
+      selectedDistrict: "",
       rooms: [1, 2, 3, 4],
     };
   },
@@ -93,10 +107,23 @@ export default {
           "http://127.0.0.1:8000/api1/sections"
         );
         //console.log(response.data);
-        this.cities = Object.keys(response.data);
+        this.sections = response.data;
+        this.cities = Object.keys(this.sections);
       } catch (error) {
         console.log(error);
       }
+    },
+    logUpdate(newValue) {
+      console.log(newValue);
+    },
+  },
+  watch: {
+    selectedCity: function () {
+      this.logUpdate(this.selectedCity);
+      this.districts = this.sections[this.selectedCity];
+    },
+    selectedDistrict: function () {
+      this.logUpdate(this.selectedDistrict);
     },
   },
   created() {

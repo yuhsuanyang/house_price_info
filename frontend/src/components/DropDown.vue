@@ -4,6 +4,8 @@
       v-bind:list="list_name"
       v-bind:placeholder="txt"
       v-bind:size="size"
+      v-bind:value="data"
+      @input="$emit('input', $event.target.value)"
     />
     <datalist v-bind:id="list_name">
       <option
@@ -17,11 +19,15 @@
 <script>
 export default {
   name: "DropDown",
+  model: {
+    prop: "data",
+  },
   props: {
     txt: String,
     list_name: String,
     size: Number,
     values: Array,
+    data: { type: String },
   },
 };
 </script>
