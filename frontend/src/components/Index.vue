@@ -71,7 +71,7 @@
       <div>
         <button>
           <img src="../assets/update.png" />
-          <p>更新</p>
+          <p>更新資料庫</p>
         </button>
       </div>
     </div>
@@ -158,5 +158,9 @@ button {
 }
 button > p {
   margin: 0;
+}
+button > img {
+  margin: auto;
+  width: 1.5em;
 }
 </style>
