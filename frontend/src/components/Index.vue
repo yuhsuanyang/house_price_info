@@ -58,7 +58,8 @@
     </form>
     <div class="tools">
       <div>
-        <button form="form" type="submit">
+        <!--<button form="form" type="submit" @click="submitForm()">-->
+        <button @click="submitForm()">
           <img src="../assets/search.png" />
           <p>搜尋中古屋</p>
         </button>
@@ -112,7 +113,7 @@ export default {
     async getData() {
       try {
         const response = await this.$http.get(
-          "http://127.0.0.1:8000/api1/sections"
+          "http://127.0.0.1:8327/api1/sections"
         ); //上面執行完了才會執行下面的
         //console.log(response.data);
         this.sections = response.data;
@@ -121,8 +122,8 @@ export default {
         console.log(error);
       }
     },
-    postData() {
-      this.$http.post("http://127.0.0.1:8000/query", {
+    async submitForm() {
+      let queryArgs = {
         region: this.selectedCity,
         section: this.selectedDistrict,
         rooms: this.selectedRoom,
@@ -132,7 +133,17 @@ export default {
         age_max: this.ageMax,
         price_min: this.priceMin,
         price_max: this.priceMax,
-      });
+      };
+      console.log(queryArgs);
+      try {
+        const response = await this.$http.post(
+          "http://127.0.0.1:8327/query/",
+          queryArgs
+        );
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
     },
     logUpdate(newValue) {
       console.log(newValue);
