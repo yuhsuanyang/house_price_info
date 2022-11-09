@@ -1,11 +1,18 @@
 <template>
   <div>
-    <input v-bind:size="size" />
+    <input
+      v-bind:size="size"
+      v-bind:value="data"
+      @input="$emit('input', $event.target.value)"
+    />
   </div>
 </template>
 <script>
 export default {
   name: "Input",
+  model: {
+    prop: "data",
+  },
   props: {
     size: Number,
   },

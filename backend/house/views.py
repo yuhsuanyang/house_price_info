@@ -37,14 +37,13 @@ def get_section(request):
 @csrf_exempt
 def get_posted_query(request):
     data = JSONParser().parse(request)
-    print(data)
-    #    posted_args = {
-    #        'region_name': request.POST['region'],
-    #        'section_name': request.POST['section'],
-    #        'price': request.POST['price_min'],
-    #        'area': request.POST['area_min'],
-    #        'houseage': request.POST['age_min'],
-    #        'num_rooms': request.POST['rooms'],
-    #    }
-    #    print(posted_args)
+    posted_args = {
+        'region_name': data['region'],
+        'section_name': data['section'],
+        'price': [data['price_min'], data['price_max']],
+        'area': [data['area_min'], data['area_max']],
+        'houseage': [data['age_min'], data['age_max']],
+        'num_rooms': data['rooms'],
+    }
+    print(posted_args)
     return HttpResponse(400)

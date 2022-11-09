@@ -35,8 +35,8 @@
           <FormHeader txt="面積" />
           <Input size="5" v-model="areaMin" />
           <FormText txt="~" />
-          <Input size="5" />
-          <FormText txt="坪" v-model="areaMax" />
+          <Input size="5" v-model="areaMax" />
+          <FormText txt="坪" />
         </div>
       </div>
       <div class="row">
