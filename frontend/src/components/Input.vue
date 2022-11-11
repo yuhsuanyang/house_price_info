@@ -1,6 +1,7 @@
 <template>
   <div>
     <input
+      v-bind:placeholder="txt"
       v-bind:size="size"
       v-bind:value="data"
       @input="$emit('input', $event.target.value)"
@@ -15,6 +16,7 @@ export default {
   },
   props: {
     size: Number,
+    txt: Number,
   },
 };
 </script>

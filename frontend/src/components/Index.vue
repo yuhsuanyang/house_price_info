@@ -33,7 +33,7 @@
         </div>
         <div class="cell" style="width: 50%">
           <FormHeader txt="面積" />
-          <Input size="5" v-model="areaMin" />
+          <Input size="5" txt="0" v-model="areaMin" />
           <FormText txt="~" />
           <Input size="5" v-model="areaMax" />
           <FormText txt="坪" />
@@ -42,14 +42,14 @@
       <div class="row">
         <div class="cell" style="width: 50%">
           <FormHeader txt="屋齡" />
-          <Input size="5" v-model="ageMin" />
+          <Input size="5" txt="0" v-model="ageMin" />
           <FormText txt="~" />
           <Input size="5" v-model="ageMax" />
           <FormText txt="年" />
         </div>
         <div class="cell" style="width: 50%">
           <FormHeader txt="售金" />
-          <Input size="5" v-model="priceMin" />
+          <Input size="5" txt="0" v-model="priceMin" />
           <FormText txt="~" />
           <Input size="5" v-model="priceMax" />
           <FormText txt="萬" />
@@ -101,12 +101,12 @@ export default {
       selectedDistrict: "",
       rooms: ["不限", "1", "2", "3", "4", "5"],
       selectedRoom: "",
-      areaMin: "",
+      areaMin: "0",
       areaMax: "",
-      ageMin: "",
+      ageMin: "0",
       ageMax: "",
+      priceMin: "0",
       priceMax: "",
-      priceMin: "",
     };
   },
   methods: {
