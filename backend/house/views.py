@@ -6,7 +6,7 @@ from rest_framework.parsers import JSONParser
 from .serializers import ClusterSerializer
 from .models import House
 from .config import section
-#from .selector import Selector
+from .selector import ItemSelector
 
 # Create your views here.
 
@@ -43,7 +43,19 @@ def get_posted_query(request):
         'price': [data['price_min'], data['price_max']],
         'area': [data['area_min'], data['area_max']],
         'houseage': [data['age_min'], data['age_max']],
-        'num_rooms': data['rooms'],
+        'num_rooms': '0' if data['rooms'] == '不限' else data['rooms'],
     }
     print(posted_args)
+    selector = ItemSelector()
+    for col in posted_args:
+        if col in ['region_name', 'section_name']:
+            print(col)
+            selector.query_by_str(col, posted_args[col])
+        elif col in ['price', 'area', 'houseage']:
+            selector.query_by_range(col, posted_args[col][0],
+                                    posted_args[col][1])
+        else:
+            selector.query_by_num(col, posted_args[col])
+    print(selector.all_data)
+    #    selector.all_data.to_csv('query_result.csv', index=False)
     return HttpResponse(400)
