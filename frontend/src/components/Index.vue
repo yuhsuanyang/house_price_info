@@ -1,7 +1,7 @@
 <template>
   <div>
-    <img src="../assets/logo_bird.png" style="width: 40%" />
-    <form id="form">
+    <img src="../assets/logo_bird.png" class="content_width" />
+    <form id="form" class="content_width">
       <div class="row">
         <div class="cell" style="width: 100%">
           <FormHeader txt="位置" />
@@ -132,15 +132,19 @@ export default {
 };
 </script>
 <style>
+body {
+  min-width: 950px;
+  margin: 0;
+  font-size: 16px;
+}
 #form {
-  width: 50%;
   margin: auto;
   font-size: 1em;
 }
 .row {
   display: flex;
-  margin: 5% 10%;
-  justify-content: space-between;
+  margin: 5% 0%;
+  /*  justify-content: space-between;*/
 }
 .cell {
   display: flex;
@@ -151,6 +155,19 @@ export default {
   display: flex;
   gap: 1em;
   justify-content: center;
+}
+.content_width {
+  width: 45%;
+}
+@media screen and (max-width: 1350px) {
+  .content_width {
+    width: 55%;
+  }
+}
+@media screen and (max-width: 1000px) {
+  .content_width {
+    width: 70%;
+  }
 }
 button {
   border: none;
