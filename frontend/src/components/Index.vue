@@ -133,7 +133,7 @@ export default {
 </script>
 <style>
 body {
-  min-width: 950px;
+  min-width: 700px;
   margin: 0;
   font-size: 16px;
 }
@@ -159,7 +159,7 @@ body {
 .content_width {
   width: 45%;
 }
-@media screen and (max-width: 1350px) {
+@media screen and (max-width: 1200px) {
   .content_width {
     width: 55%;
   }
@@ -167,6 +167,11 @@ body {
 @media screen and (max-width: 1000px) {
   .content_width {
     width: 70%;
+  }
+}
+@media screen and (max-width: 800px) {
+  .content_width {
+    width: 90%;
   }
 }
 button {
