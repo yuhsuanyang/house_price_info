@@ -1,28 +1,23 @@
-//import Vue from "vue";
-import { createRouter, createWebHistory } from "vue-router";
+import Vue from "vue";
+import VueRouter from "vue-router";
 import Index from "./components/Index.vue";
 import HelloWorld from "./components/HelloWorld.vue";
 //import QueryResult from "./components/QueryResult.vue";
 
-const router = createRouter({
-  history: createWebHistory(),
+Vue.use(VueRouter);
+export default new VueRouter({
+  mode: "history",
   routes: [
     {
       path: "/",
       name: "Index",
-      componenets: Index,
+      component: Index,
     },
     {
       path: "/query_result",
       name: "Query",
-      components: HelloWorld,
+      component: HelloWorld,
       //      components: QueryResult,
     },
-    //    {
-    //      path: "",
-    //      name: "/items/:clusterId",
-    //      components:,
-    //    },
   ],
 });
-export default router;
