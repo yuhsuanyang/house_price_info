@@ -80,6 +80,7 @@
   </div>
 </template>
 <script>
+import router from "../router.js";
 import FormHeader from "./FormHeader.vue";
 import FormText from "./FormText.vue";
 import DropDown from "./DropDown.vue";
@@ -140,6 +141,9 @@ export default {
           "http://127.0.0.1:8327/query/",
           queryArgs
         );
+        router.push({
+          name: "Query",
+        });
         console.log(response);
       } catch (error) {
         console.log(error);

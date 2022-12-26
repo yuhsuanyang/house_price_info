@@ -32,6 +32,7 @@ class House(models.Model):
             "cluster_id": self.cluster_id,
             "region_name": self.region_name,
             "section_name": self.section_name,
+            "address": self.address,
             "price": self.price,
             "room": self.rooms,
             "area": self.area,

@@ -109,6 +109,12 @@ def get_exist_cluster(previous, new):
                                               'cluster']).drop_duplicates()
 
 
+def delete():
+    House.objects.all().delete()
+    HouseImg.objects.all().delete()
+    Community.objects.all().delete()
+
+
 def main(args):
     previous_houses = house2df()
     houses, community = get_data(args)
