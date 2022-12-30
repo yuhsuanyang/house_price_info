@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="margin-top: 60px">
     <img src="../assets/logo_bird.png" class="content_width" />
     <form id="form" class="content_width">
       <div class="row">
