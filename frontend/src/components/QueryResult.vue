@@ -14,10 +14,9 @@
       </div>
     </div>
     <div class="container">
-      <!--      <Thumbnail
-        img_src="https://img1.591.com.tw/house/2022/12/08/167050412587925907.jpg!1000x.water2.jpg"
-      />-->
-      <Thumbnail :img_src="img_url" />
+        <div v-for="i in clusters" :key="i.id">
+          <Thumbnail :img_src="i['img_url'][0]"/>
+        </div>
     </div>
   </div>
 </template>
@@ -35,11 +34,29 @@ export default {
   data() {
     return {
         img_url: "",
+        clusterId: [],
+        clusters: {},
     };
   },
   created() {
     this.img_url=SampleData["1343"][0]["img_url"][0];
-    console.log(this.img_url);
+    for (var key in SampleData){
+//        this.clusterId.push(key);
+        var data = SampleData[key]
+        this.clusters[key] = {
+            "address": data[0]["region_name"].concat(data[0]["section_name"], data[0]["address"]),
+            "price": data[0]["price"],
+            "room": data[0]["room"],
+            "floor": data[0]["floor"],
+            "houseage": data[0]["houseage"],
+            "img_url": data[0]["img_url"]
+        }
+        for (var i in data){
+            var item = data[i]
+            this.clusters[key]["img_url"].push(...item["img_url"])
+        }
+    }
+    console.log(this.clusters);
   },
 };
 </script>
@@ -67,6 +84,7 @@ p {
 }
 .container {
   display: flex;
+  flex-wrap: wrap;
   gap: 2%;
   padding: 2% 5%;
 }

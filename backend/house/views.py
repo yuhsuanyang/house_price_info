@@ -64,7 +64,6 @@ def get_posted_query(request):
         else:
             selector.query_by_num(col, posted_args[col])
 
-
 #    print(selector.all_data)
     selector.all_data.to_csv('query_result.csv', index=False)
     all_imgs = HouseImg.objects.all()
@@ -81,6 +80,11 @@ def get_posted_query(request):
             item['img_url'] = imgs[item['houseid']]
         clusters[str(i)] = cluster_list
     #    return HttpResponse(400)
+
+
+#    json_obj = json.dumps(clusters, indent=2, ensure_ascii=False)
+#    with open('../sample_data.json', 'w') as f:
+#        f.write(json_obj)
     return JsonResponse(clusters,
                         json_dumps_params={
                             'ensure_ascii': False,
